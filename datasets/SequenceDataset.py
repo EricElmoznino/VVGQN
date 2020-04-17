@@ -8,18 +8,18 @@ from datasets.path_generators import noisy_path
 
 class SequenceDataset():
 
-    def __init__(self, path_length=20, side_length=10):
-        self.env = SimpleRectangularEnvironment(side_length, side_length)
+    def __init__(self, path_length=20, width=10, height=10):
+        self.env = SimpleRectangularEnvironment(width, height)
         self.path_length = path_length
 
-    def sample(self, return_path=False):
+    def sample(self, return_path=False, return_top_view=False):
         path = noisy_path(self.env, self.path_length)
         self.env.place_agent_at(path['positions'][0], path['directions'][0])
 
         visual = [self.env.move(path['movements'][i], path['rotations'][i]) / 255
                   for i in range(self.path_length)]
         visual = np.stack(visual)
-        visual = torch.from_numpy(visual)
+        visual = torch.from_numpy(visual).float()
         visual = visual.permute([0, 3, 1, 2])
 
         movements = torch.from_numpy(path['movements'])

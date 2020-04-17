@@ -4,12 +4,12 @@ from numpy.random import normal, rayleigh, beta
 
 def noisy_path(environment,
                n_samples=20, m_scale=0.5, r_scale=5,
-               min_d_wall=1, r_from_walls=np.pi / 1.5):
+               min_d_wall=2, r_from_walls=np.pi / 1.5):
     assert environment.agent.radius is not None
     assert environment.agent.radius < min_d_wall
     assert len(environment.rooms) > 0
 
-    p, d = start_state(environment, min_d_wall)
+    p, d = start_state(environment, min_d_wall + 1)
     positions = [p]
     directions = [d]
     movements = [0]
@@ -20,7 +20,7 @@ def noisy_path(environment,
         m = rayleigh(m_scale)
 
         d_prop = dir_angle(d + r)
-        p_prop = p + m * np.array([np.cos(d_prop), np.sin(d_prop)])
+        p_prop = p + m * np.array([np.cos(d_prop), -np.sin(d_prop)]) # -sin because of righthand OpenGL coordinates
         d_wall, r_wall = closest_wall(environment, p_prop, d_prop)
         if d_wall < min_d_wall:
             m = 0
@@ -37,10 +37,10 @@ def noisy_path(environment,
         rotations.append(r)
 
     return {
-        'positions': np.stack(positions),
-        'directions': np.array(directions),
-        'movements': np.array(movements),
-        'rotations': np.array(rotations)
+        'positions': np.stack(positions).astype(np.float32),
+        'directions': np.array(directions, dtype=np.float32),
+        'movements': np.array(movements, dtype=np.float32),
+        'rotations': np.array(rotations, dtype=np.float32)
     }
 
 
@@ -57,10 +57,10 @@ def rat_path(environment,
     r_std *= delta_t
 
     # Path data to return
-    positions = np.zeros((n_samples, 2))
-    directions = np.zeros((n_samples))
-    movements = np.zeros((n_samples))
-    rotations = np.zeros((n_samples))
+    positions = np.zeros((n_samples, 2), dtype=np.float32)
+    directions = np.zeros((n_samples), dtype=np.float32)
+    movements = np.zeros((n_samples), dtype=np.float32)
+    rotations = np.zeros((n_samples), dtype=np.float32)
 
     # Initialization
     positions[0], directions[0] = start_state(environment, d_from_walls)
