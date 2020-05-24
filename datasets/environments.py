@@ -6,7 +6,7 @@ class SimpleRectangularEnvironment(MiniWorldEnv):
 
     def __init__(self,
                  width, height,
-                 obs_width=60, obs_height=60,
+                 obs_width=64, obs_height=64,
                  window_width=600, window_height=600):
         self.width = width
         self.height = height

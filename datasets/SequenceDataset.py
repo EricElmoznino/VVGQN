@@ -2,17 +2,19 @@ import random
 random.seed(27)
 import numpy as np
 import torch
+from torch.utils.data import Dataset
 from datasets.environments import SimpleRectangularEnvironment
 from datasets.path_generators import noisy_path
 
 
-class SequenceDataset():
+class SequenceDataset(Dataset):
 
-    def __init__(self, path_length=20, width=10, height=10):
+    def __init__(self, path_length=20, width=10, height=10, n_samples=1000):
+        self.n_samples = n_samples
         self.env = SimpleRectangularEnvironment(width, height)
         self.path_length = path_length
 
-    def sample(self, return_path=False, return_top_view=False):
+    def sample(self, return_path=False):
         path = noisy_path(self.env, self.path_length)
         self.env.place_agent_at(path['positions'][0], path['directions'][0])
 
@@ -33,7 +35,8 @@ class SequenceDataset():
         else:
             return visual, vestibular
 
-    def sample_batch(self, batch_size, return_path=False):
-        samples = zip(*[self.sample(return_path) for _ in range(batch_size)])
-        samples = tuple(torch.stack(tensor) for tensor in samples)
-        return samples
+    def __len__(self):
+        return self.n_samples
+
+    def __getitem__(self, item):
+        return self.sample()
