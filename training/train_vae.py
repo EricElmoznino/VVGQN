@@ -11,7 +11,12 @@ if __name__ == '__main__':
     parser.add_argument('--n_epochs', type=int, default=100, help='number of epochs run')
     parser.add_argument('--samples_per_epoch', type=int, default=10000, help='number of samples per epoch')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size')
-    parser.add_argument('--lr', type=float, default=5e-4, help='learning rate')
+    parser.add_argument('--lr_i', type=float, default=5e-4, help='initial learning rate')
+    parser.add_argument('--lr_f', type=float, default=5e-5, help='final learning rate')
+    parser.add_argument('--lr_n', type=float, default=1.6e6, help='number of steps for learning rate transition')
+    parser.add_argument('--sig_i', type=float, default=2.0, help='initial likelihood sigma')
+    parser.add_argument('--sig_f', type=float, default=0.7, help='final likelihood sigma')
+    parser.add_argument('--sig_n', type=float, default=2e5, help='number of steps for likelihood sigma transition')
     parser.add_argument('--r_dim', type=int, default=256, help='r_dim for model')
     parser.add_argument('--h_dim', type=int, default=128, help='h_dim for model')
     parser.add_argument('--z_dim', type=int, default=3, help='z_dim for model')
@@ -34,4 +39,5 @@ if __name__ == '__main__':
     val_set = SingleViewDataset(n_samples=args.batch_size)
 
     train(args.run_name, forward_func, sample_func, model, train_set, val_set,
-          args.n_epochs, args.batch_size, args.lr)
+          args.n_epochs, args.batch_size,
+          args.lr_i, args.lr_f, args.lr_n, args.sig_i, args.sig_f, args.sig_n)

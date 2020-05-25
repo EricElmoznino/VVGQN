@@ -17,7 +17,8 @@ device = torch.device('cuda:0' if cuda else 'cpu')
 
 
 def train(run_name, forward_func, sample_func, model, train_set, val_set,
-          n_epochs, batch_size, lr):
+          n_epochs, batch_size,
+          lr_i, lr_f, lr_n, sig_i, sig_f, sig_n):
     # Make the run directory
     save_dir = os.path.join('training/saved_runs', run_name)
     if run_name == 'debug':
@@ -29,8 +30,8 @@ def train(run_name, forward_func, sample_func, model, train_set, val_set,
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=True)
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    lr_scheduler = utils.AnnealingStepLR(optimizer, mu_i=lr, mu_f=lr/10, n=1.6e6)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr_i)
+    lr_scheduler = utils.AnnealingStepLR(optimizer, mu_i=lr_i, mu_f=lr_f, n=lr_n)
     sigma_scheduler = utils.AnnealingStepSigma(2.0, 0.7, 2e5)
 
     # Training step

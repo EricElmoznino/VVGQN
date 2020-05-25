@@ -28,7 +28,7 @@ class MultiViewDataset(Dataset):
             visual.append(v)
 
             pos = pos / np.array([self.env.width, self.env.height], dtype=np.float32) - 0.5
-            view = torch.FloatTensor([pos[0], pos[1], math.cos(dir), -math.sin(dir)])    # -sin because of righthand OpenGL coordinates
+            view = torch.FloatTensor([pos[0], pos[1], math.cos(dir), -math.sin(dir)])    # -sin because of lefthand OpenGL coordinates
             viewpoints.append(view)
 
         visual, viewpoints = torch.stack(visual), torch.stack(viewpoints)

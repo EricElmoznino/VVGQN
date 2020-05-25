@@ -20,7 +20,7 @@ def noisy_path(environment,
         m = rayleigh(m_scale)
 
         d_prop = dir_angle(d + r)
-        p_prop = p + m * np.array([np.cos(d_prop), -np.sin(d_prop)]) # -sin because of righthand OpenGL coordinates
+        p_prop = p + m * np.array([np.cos(d_prop), -np.sin(d_prop)]) # -sin because of lefthand OpenGL coordinates
         d_wall, r_wall = closest_wall(environment, p_prop, d_prop)
         if d_wall < min_d_wall:
             m = 0
