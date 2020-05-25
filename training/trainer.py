@@ -1,5 +1,7 @@
 import os
 import shutil
+import time
+from datetime import timedelta
 import math
 import torch
 from torch.distributions import Normal
@@ -19,6 +21,7 @@ device = torch.device('cuda:0' if cuda else 'cpu')
 def train(run_name, forward_func, sample_func, model, train_set, val_set,
           n_epochs, batch_size,
           lr_i, lr_f, lr_n, sig_i, sig_f, sig_n):
+
     # Make the run directory
     save_dir = os.path.join('training/saved_runs', run_name)
     if run_name == 'debug':
@@ -32,7 +35,7 @@ def train(run_name, forward_func, sample_func, model, train_set, val_set,
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr_i)
     lr_scheduler = utils.AnnealingStepLR(optimizer, mu_i=lr_i, mu_f=lr_f, n=lr_n)
-    sigma_scheduler = utils.AnnealingStepSigma(2.0, 0.7, 2e5)
+    sigma_scheduler = utils.AnnealingStepSigma(sig_i, sig_f, sig_n)
 
     # Training step
     def step(engine, batch):
@@ -143,5 +146,8 @@ def train(run_name, forward_func, sample_func, model, train_set, val_set,
         else:
             raise e
 
+    start_time = time.time()
     trainer.run(train_loader, n_epochs)
     writer.close()
+    end_time = time.time()
+    print('Total training time: {}'.format(timedelta(seconds=end_time - start_time)))
