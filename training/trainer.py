@@ -1,4 +1,5 @@
 import os
+import shutil
 import math
 import torch
 from torch.distributions import Normal
@@ -19,6 +20,8 @@ def train(run_name, forward_func, sample_func, model, train_set, val_set,
           n_epochs, batch_size, lr):
     # Make the run directory
     save_dir = os.path.join('training/saved_runs', run_name)
+    if run_name == 'debug':
+        shutil.rmtree(save_dir, ignore_errors=True)
     os.mkdir(save_dir)
 
     model = model.to(device)
@@ -34,8 +37,8 @@ def train(run_name, forward_func, sample_func, model, train_set, val_set,
     def step(engine, batch):
         model.train()
 
-        if isinstance(batch, tuple):
-            batch = tuple(tensor.to(device) for tensor in batch)
+        if isinstance(batch, list):
+            batch = [tensor.to(device) for tensor in batch]
         else:
             batch = batch.to(device)
         x_mu, x_q, kl = forward_func(model, batch)
@@ -107,8 +110,8 @@ def train(run_name, forward_func, sample_func, model, train_set, val_set,
         model.eval()
         with torch.no_grad():
             batch = next(iter(val_loader))
-            if isinstance(batch, tuple):
-                batch = tuple(tensor.to(device) for tensor in batch)
+            if isinstance(batch, list):
+                batch = [tensor.to(device) for tensor in batch]
             else:
                 batch = batch.to(device)
             x_mu, x_q, kl = forward_func(model, batch)

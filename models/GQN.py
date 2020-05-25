@@ -5,7 +5,7 @@ from .Representation import Representation
 from .Generator import Generator
 
 
-class GenerativeQueryNetwork(nn.Module):
+class GQN(nn.Module):
     """
     Generative Query Network (GQN) as described
     in "Neural scene representation and rendering"
@@ -38,8 +38,8 @@ class GenerativeQueryNetwork(nn.Module):
         batch_size, n_views, *x_dims = context_x.shape
         _, _, *v_dims = context_v.shape
 
-        x = context_x.view((-1, *x_dims))
-        v = context_v.view((-1, *v_dims))
+        x = context_x.reshape((-1, *x_dims))
+        v = context_v.reshape((-1, *v_dims))
 
         # Representation generated from input images
         # and corresponding viewpoints
@@ -70,8 +70,8 @@ class GenerativeQueryNetwork(nn.Module):
         _, _, *x_dims = context_x.shape
         _, _, *v_dims = context_v.shape
 
-        x = context_x.view((-1, *x_dims))
-        v = context_v.view((-1, *v_dims))
+        x = context_x.reshape((-1, *x_dims))
+        v = context_v.reshape((-1, *v_dims))
 
         phi = self.representation(x, v)
 

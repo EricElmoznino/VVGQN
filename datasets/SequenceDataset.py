@@ -10,6 +10,7 @@ from datasets.path_generators import noisy_path
 class SequenceDataset(Dataset):
 
     def __init__(self, path_length=20, width=10, height=10, n_samples=1000):
+        self.v_dim = 3
         self.n_samples = n_samples
         self.env = SimpleRectangularEnvironment(width, height)
         self.path_length = path_length

@@ -4,18 +4,6 @@ from models.VAE import VAE
 from datasets.SingleViewDataset import SingleViewDataset
 
 
-def forward_func(model, batch):
-    x = batch
-    x_mu, _, kl = model(x)
-    return x_mu, x, kl
-
-
-def sample_func(model, batch):
-    x = batch
-    x_mu, r = model.sample(x)
-    return x_mu, x, r
-
-
 if __name__ == '__main__':
     parser = ArgumentParser(description='VAE training')
     parser.add_argument('--run_name', required=True, type=str,
@@ -24,11 +12,22 @@ if __name__ == '__main__':
     parser.add_argument('--samples_per_epoch', type=int, default=10000, help='number of samples per epoch')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size')
     parser.add_argument('--lr', type=float, default=5e-4, help='learning rate')
-    parser.add_argument('--r_dim', type=int, default=256, help='r_dim for VAE')
-    parser.add_argument('--h_dim', type=int, default=128, help='h_dim for VAE')
-    parser.add_argument('--z_dim', type=int, default=3, help='z_dim for VAE')
-    parser.add_argument('--l', type=int, default=8, help='L for VAE')
+    parser.add_argument('--r_dim', type=int, default=256, help='r_dim for model')
+    parser.add_argument('--h_dim', type=int, default=128, help='h_dim for model')
+    parser.add_argument('--z_dim', type=int, default=3, help='z_dim for model')
+    parser.add_argument('--l', type=int, default=8, help='L for model')
     args = parser.parse_args()
+
+    def forward_func(model, batch):
+        x = batch
+        x_mu, _, kl = model(x)
+        return x_mu, x, kl
+
+
+    def sample_func(model, batch):
+        x = batch
+        x_mu, r = model.sample(x)
+        return x_mu, x, r
 
     model = VAE(c_dim=3, r_dim=args.r_dim, h_dim=args.h_dim, z_dim=args.z_dim, l=args.l)
     train_set = SingleViewDataset(n_samples=args.samples_per_epoch)
