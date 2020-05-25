@@ -1,10 +1,9 @@
 from argparse import ArgumentParser
 import random
+random.seed(27)
 from training.trainer import train
 from models.GQN import GQN
-from datasets.SequenceDataset import SequenceDataset
-
-random.seed(27)
+from datasets.MultiViewDataset import MultiViewDataset
 
 
 if __name__ == '__main__':
@@ -19,12 +18,11 @@ if __name__ == '__main__':
     parser.add_argument('--h_dim', type=int, default=128, help='h_dim for model')
     parser.add_argument('--z_dim', type=int, default=3, help='z_dim for model')
     parser.add_argument('--l', type=int, default=8, help='L for model')
-    parser.add_argument('--path_length', type=int, default=20, help='Length of path')
     parser.add_argument('--min_obs', type=int, default=5, help='Minimum number of observations')
     parser.add_argument('--max_obs', type=int, default=10, help='Maximum number of observations')
     args = parser.parse_args()
 
-    assert 0 < args.min_obs <= args.max_obs < args.path_length
+    assert 0 < args.min_obs <= args.max_obs
 
     def forward_func(model, batch):
         x, v = batch
@@ -45,8 +43,8 @@ if __name__ == '__main__':
         x_mu, r = model.sample(x, v, v_q)
         return x_mu, x_q, r
 
-    train_set = SequenceDataset(path_length=args.path_length, n_samples=args.samples_per_epoch)
-    val_set = SequenceDataset(path_length=args.path_length, n_samples=args.batch_size)
+    train_set = MultiViewDataset(n_views=args.max_obs + 1, n_samples=args.samples_per_epoch)
+    val_set = MultiViewDataset(n_views=args.max_obs + 1, n_samples=args.batch_size)
     model = GQN(c_dim=3, v_dim=train_set.v_dim, r_dim=args.r_dim, h_dim=args.h_dim, z_dim=args.z_dim, l=args.l)
 
     train(args.run_name, forward_func, sample_func, model, train_set, val_set,
