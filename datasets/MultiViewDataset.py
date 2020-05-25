@@ -16,7 +16,7 @@ class MultiViewDataset(Dataset):
         self.env = SimpleRectangularEnvironment(width, height)
         self.n_views = n_views
 
-    def sample(self, return_path=False):
+    def sample(self):
         visual, viewpoints = [], []
         for _ in range(self.n_views):
             pos, dir = start_state(self.env, d_from_walls=3)
@@ -27,7 +27,8 @@ class MultiViewDataset(Dataset):
             v = v.permute([2, 0, 1])
             visual.append(v)
 
-            view = torch.FloatTensor([pos[0], pos[1], math.cos(dir), math.sin(dir)])
+            pos = pos / np.array([self.env.width, self.env.height], dtype=np.float32) - 0.5
+            view = torch.FloatTensor([pos[0], pos[1], math.cos(dir), -math.sin(dir)])    # -sin because of righthand OpenGL coordinates
             viewpoints.append(view)
 
         visual, viewpoints = torch.stack(visual), torch.stack(viewpoints)
