@@ -61,6 +61,7 @@ class Generator(nn.Module):
         :return reconstruction of x and kl-divergence
         """
         batch_size = x.size(0)
+        r = r.unsqueeze(dim=2).unsqueeze(dim=3)
 
         # Generator initial state
         c_g = x.new_zeros((batch_size, self.h_dim, 16, 16))
@@ -115,6 +116,7 @@ class Generator(nn.Module):
         :param r: representation (context)
         """
         batch_size = r.size(0)
+        r = r.unsqueeze(dim=2).unsqueeze(dim=3)
 
         # Initial state
         c_g = r.new_zeros((batch_size, self.h_dim, 16, 16))

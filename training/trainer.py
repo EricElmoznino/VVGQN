@@ -12,6 +12,7 @@ from ignite.contrib.handlers import ProgressBar
 from ignite.engine import Engine, Events
 from ignite.handlers import ModelCheckpoint, Timer
 from ignite.metrics import RunningAverage
+from models.VVGQN import VVGQN
 from . import utils
 
 cuda = torch.cuda.is_available()
@@ -100,6 +101,8 @@ def train(run_name, forward_func, sample_func, model, train_set, val_set,
     def save_images(engine, batch):
         x_mu, x_q, r = sample_func(model, batch)
         r_dim = r.shape[1]
+        if isinstance(model, VVGQN):
+            r = (r + 1) / 2
         r = r.view(-1, 1, int(math.sqrt(r_dim)), int(math.sqrt(r_dim)))
 
         x_mu = x_mu.detach().cpu().float()

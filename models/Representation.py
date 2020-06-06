@@ -60,6 +60,6 @@ class Representation(nn.Module):
         r = F.relu(self.conv7(r)) + skip_out
         r = F.relu(self.conv8(r))
 
-        r = self.avgpool(r)
+        r = self.avgpool(r).squeeze(dim=3).squeeze(dim=2)
 
         return r

@@ -7,7 +7,7 @@ from datasets.MultiViewDataset import MultiViewDataset
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='VAE training')
+    parser = ArgumentParser(description='GQN training')
     parser.add_argument('--run_name', required=True, type=str,
                         help='name of the current run (where runs are saved)')
     parser.add_argument('--n_epochs', type=int, default=100, help='number of epochs run')

@@ -65,9 +65,7 @@ class GQN(nn.Module):
         :param context_v: viewpoints of `context_x`
         :param query_v: viewpoint to generate image from
         """
-        batch_size, n_views, _, _, _ = context_x.shape
-
-        _, _, *x_dims = context_x.shape
+        batch_size, n_views, *x_dims = context_x.shape
         _, _, *v_dims = context_v.shape
 
         x = context_x.reshape((-1, *x_dims))
