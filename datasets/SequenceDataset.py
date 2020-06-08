@@ -10,7 +10,7 @@ from datasets.path_generators import noisy_path
 class SequenceDataset(Dataset):
 
     def __init__(self, path_length=20, width=10, height=10, n_samples=1000):
-        self.v_dim = 3
+        self.v_dim = 2
         self.n_samples = n_samples
         self.env = SimpleRectangularEnvironment(width, height)
         self.path_length = path_length
@@ -27,7 +27,7 @@ class SequenceDataset(Dataset):
 
         movements = torch.from_numpy(path['movements'])
         rotations = torch.from_numpy(path['rotations'])
-        vestibular = torch.stack([movements, rotations.cos(), rotations.sin()], dim=1)
+        vestibular = torch.stack([movements, rotations], dim=1)
 
         if return_path:
             positions = torch.from_numpy(path['positions'])
