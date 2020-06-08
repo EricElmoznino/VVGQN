@@ -48,6 +48,6 @@ class SimpleVVGQN(nn.Module):
         r_projected = r_projected.squeeze(dim=0)
 
         # Generate predicted image for final representation
-        query_x = self.generator(r_projected, None)
+        x_gen = self.generator(r_projected, None)
 
-        return query_x, r
+        return x_gen, r

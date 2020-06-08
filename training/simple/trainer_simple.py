@@ -42,9 +42,9 @@ def train(run_name, forward_func, model, train_set, val_set,
             batch = [tensor.to(device) for tensor in batch]
         else:
             batch = batch.to(device)
-        x_rec, x_q, _ = forward_func(model, batch)
+        x_gen, x_q, _ = forward_func(model, batch)
 
-        loss = F.l1_loss(x_rec, x_q)
+        loss = F.l1_loss(x_gen, x_q)
         loss.backward()
 
         optimizer.step()
@@ -76,17 +76,17 @@ def train(run_name, forward_func, model, train_set, val_set,
                 writer.add_scalar('training/{}'.format(metric), value, engine.state.iteration)
 
     def save_images(engine, batch):
-        x_rec, x_q, r = forward_func(model, batch)
+        x_gen, x_q, r = forward_func(model, batch)
         r_dim = r.shape[1]
         if isinstance(model, SimpleVVGQN):
             r = (r + 1) / 2
         r = r.view(-1, 1, int(math.sqrt(r_dim)), int(math.sqrt(r_dim)))
 
-        x_rec = x_rec.detach().cpu().float()
+        x_gen = x_gen.detach().cpu().float()
         r = r.detach().cpu().float()
 
         writer.add_image('representation', make_grid(r), engine.state.epoch)
-        writer.add_image('generation', make_grid(x_rec), engine.state.epoch)
+        writer.add_image('generation', make_grid(x_gen), engine.state.epoch)
         writer.add_image('query', make_grid(x_q), engine.state.epoch)
 
     @trainer.on(Events.EPOCH_COMPLETED)
@@ -98,9 +98,9 @@ def train(run_name, forward_func, model, train_set, val_set,
                 batch = [tensor.to(device) for tensor in batch]
             else:
                 batch = batch.to(device)
-            x_rec, x_q, r = forward_func(model, batch)
+            x_gen, x_q, r = forward_func(model, batch)
 
-            loss = F.l1_loss(x_rec, x_q)
+            loss = F.l1_loss(x_gen, x_q)
 
             writer.add_scalar('validation/L1', loss.item(), engine.state.epoch)
 

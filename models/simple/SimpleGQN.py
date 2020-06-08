@@ -43,6 +43,6 @@ class SimpleGQN(nn.Module):
         r = torch.mean(phi, dim=1)
 
         # Generate predicted image for final representation
-        query_x = self.generator(r, query_v)
+        x_gen = self.generator(r, query_v)
 
-        return query_x, r
+        return x_gen, r

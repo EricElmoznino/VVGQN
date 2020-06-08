@@ -22,5 +22,5 @@ class SimpleAE(nn.Module):
         :param x: batch of images [b, c, h, w]
         """
         r = self.representation(x, None)
-        x_reconstructed = self.generator(r, None)
-        return x_reconstructed, r
+        x_gen = self.generator(r, None)
+        return x_gen, r
