@@ -48,8 +48,8 @@ if __name__ == '__main__':
         x_mu, r = model.sample(x, v, v_q)
         return x_mu, x_q, r
 
-    train_set = SequenceDataset(path_length=args.max_obs + 10, n_samples=args.samples_per_epoch)
-    val_set = SequenceDataset(path_length=args.max_obs + 10, n_samples=args.batch_size)
+    train_set = SequenceDataset(path_length=args.max_obs + 0, n_samples=args.samples_per_epoch)
+    val_set = SequenceDataset(path_length=args.max_obs + 0, n_samples=args.batch_size)
     model = VVGQN(c_dim=3, v_dim=train_set.v_dim, r_dim=args.r_dim, h_dim=args.h_dim, z_dim=args.z_dim, l=args.l)
 
     train(args.run_name, forward_func, sample_func, model, train_set, val_set,

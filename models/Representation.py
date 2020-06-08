@@ -4,14 +4,14 @@ import torch.nn.functional as F
 
 
 class Representation(nn.Module):
-    def __init__(self, n_channels, v_dim, r_dim=256):
+    def __init__(self, c_dim, v_dim, r_dim=256):
         """
         Network that generates a condensed representation
         vector from a joint input of image and viewpoint.
 
         Employs the tower/pool architecture described in the paper.
 
-        :param n_channels: number of color channels in input image
+        :param c_dim: number of color channels in input image
         :param v_dim: dimensions of the vestibular vector
         :param r_dim: dimensions of representation
         """
@@ -20,7 +20,7 @@ class Representation(nn.Module):
         # Final representation size
         self.r_dim = k = r_dim
 
-        self.conv1 = nn.Conv2d(n_channels, k, kernel_size=2, stride=2)
+        self.conv1 = nn.Conv2d(c_dim, k, kernel_size=2, stride=2)
         self.conv2 = nn.Conv2d(k, k, kernel_size=2, stride=2)
         self.conv3 = nn.Conv2d(k, k // 2, kernel_size=3, stride=1, padding=1)
         self.conv4 = nn.Conv2d(k // 2, k, kernel_size=2, stride=2)

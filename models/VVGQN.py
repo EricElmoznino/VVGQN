@@ -30,7 +30,7 @@ class VVGQN(nn.Module):
 
     def forward(self, context_x, context_v, query_x, query_v):
         """
-        Forward through the GQN.
+        Forward through the VVGQN.
 
         :param context_x: batch of context images [b, m, c, h, w]
         :param context_v: batch of context vestibular actions [b, m, k]
