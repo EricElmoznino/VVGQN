@@ -15,10 +15,12 @@ class SimpleVVGQN(nn.Module):
         super().__init__()
         self.r_dim = r_dim
 
-        self.visual = SimpleRepresentation(c_dim, 0, r_dim)
+        # self.visual = SimpleRepresentation(c_dim, 0, r_dim)
+        self.visual = SimpleRepresentation(c_dim, v_dim, r_dim)
         self.representation = nn.LSTM(v_dim + r_dim, r_dim, batch_first=True)
         self.projection = nn.LSTM(v_dim, r_dim, batch_first=True)
-        self.generator = SimpleGenerator(c_dim, 0, r_dim)
+        # self.generator = SimpleGenerator(c_dim, 0, r_dim)
+        self.generator = SimpleGenerator(c_dim, v_dim, r_dim)
 
     def forward(self, context_x, context_v, query_v):
         """
@@ -32,22 +34,27 @@ class SimpleVVGQN(nn.Module):
 
         # Representation generated from input images
         context_x = context_x.reshape((-1, *x_dims))
-        phi = self.visual(context_x, None)
+        # phi = self.visual(context_x, None)
+        context_v = context_v.reshape((-1, v_dim))
+        phi = self.visual(context_x, context_v)
+        r = phi
 
         # Separate batch and sequence dimensions
-        _, phi_dim = phi.shape
-        phi = phi.view((batch_size, n_views, phi_dim))
+        # _, phi_dim = phi.shape
+        # phi = phi.view((batch_size, n_views, phi_dim))
 
         # Generate representation from visual and vestibular sequences
-        phi = torch.cat((phi, context_v), dim=-1)
-        _, state = self.representation(phi)
-        r = state[0].squeeze(dim=0)
+        # phi = torch.cat((phi, context_v), dim=-1)
+        # _, state = self.representation(phi)
+        # r = state[0].squeeze(dim=0)
 
         # Project the representation into the future given new vestibular input
-        _, (r_projected, _) = self.projection(query_v, state)
-        r_projected = r_projected.squeeze(dim=0)
+        # _, (r_projected, _) = self.projection(query_v, state)
+        # r_projected = r_projected.squeeze(dim=0)
 
         # Generate predicted image for final representation
-        x_gen = self.generator(r_projected, None)
+        # x_gen = self.generator(r_projected, None)
+        query_v = query_v.reshape((-1, v_dim))
+        x_gen = self.generator(phi, query_v)
 
         return x_gen, r
