@@ -25,15 +25,19 @@ if __name__ == '__main__':
     parser.add_argument('--l', type=int, default=8, help='L for model')
     parser.add_argument('--min_obs', type=int, default=5, help='Minimum number of observations')
     parser.add_argument('--max_obs', type=int, default=10, help='Maximum number of observations')
+    parser.add_argument('--min_fut', type=int, default=8, help='Minimum number of steps in future to predict')
+    parser.add_argument('--max_fut', type=int, default=10, help='Maximum number of steps in future to predict')
     args = parser.parse_args()
 
     assert 0 < args.min_obs <= args.max_obs
+    assert 0 < args.min_fut <= args.max_fut
 
     def forward_func(model, batch):
         x, v = batch
 
         n_obs = random.randint(args.min_obs, args.max_obs)
-        x, v, x_q, v_q = x[:, :n_obs], v[:, :n_obs], x[:, -1], v[:, n_obs:]
+        n_fut = random.randint(args.min_fut, args.max_fut)
+        x, v, x_q, v_q = x[:, :n_obs], v[:, :n_obs], x[:, n_obs + n_fut - 1], v[:, n_obs:n_obs + n_fut]
 
         x_mu, _, kl = model(x, v, x_q, v_q)
         return x_mu, x_q, kl
@@ -48,8 +52,8 @@ if __name__ == '__main__':
         x_mu, r = model.sample(x, v, v_q)
         return x_mu, x_q, r
 
-    train_set = SequenceDataset(path_length=args.max_obs + 10, n_samples=args.samples_per_epoch)
-    val_set = SequenceDataset(path_length=args.max_obs + 10, n_samples=args.batch_size)
+    train_set = SequenceDataset(path_length=args.max_obs + args.max_fut, n_samples=args.samples_per_epoch)
+    val_set = SequenceDataset(path_length=args.max_obs + args.max_fut, n_samples=args.batch_size)
     model = VVGQN(c_dim=3, v_dim=train_set.v_dim, r_dim=args.r_dim, h_dim=args.h_dim, z_dim=args.z_dim, l=args.l)
 
     train(args.run_name, forward_func, sample_func, model, train_set, val_set,
