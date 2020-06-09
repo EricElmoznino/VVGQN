@@ -17,6 +17,7 @@ class MultiViewDataset(Dataset):
         self.n_views = n_views
 
     def sample(self):
+        self.env.reset()
         visual, viewpoints = [], []
         for _ in range(self.n_views):
             pos, dir = start_state(self.env, d_from_walls=3)

@@ -14,6 +14,7 @@ class SingleViewDataset(Dataset):
         self.env = SimpleRectangularEnvironment(width, height)
 
     def sample(self):
+        self.env.reset()
         pos, dir = start_state(self.env, d_from_walls=3)
         self.env.place_agent_at(pos, dir)
 
