@@ -16,6 +16,7 @@ class SequenceDataset(Dataset):
         self.path_length = path_length
 
     def sample(self, return_path=False):
+        self.env.reset()
         path = noisy_path(self.env, self.path_length)
         self.env.place_agent_at(path['positions'][0], path['directions'][0])
 
